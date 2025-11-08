@@ -1,8 +1,13 @@
+use std::thread::sleep;
+use std::time::Duration;
+
 fn main() {
     //io::stdout().flush().unwrap();
-    //sleep(Duration::from_secs(1));
-
-    println!("{}", generate_grid(20, 20));
+    for x in 1..29 {
+        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+        println!("{}", generate_grid(x, x));
+        sleep(Duration::from_millis(50));
+    }
 }
 
 /// Number of cells must be greater than 0
