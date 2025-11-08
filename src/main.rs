@@ -1,13 +1,26 @@
 use std::thread::sleep;
 use std::time::Duration;
+use crossterm_cursor::{self, TerminalCursor};
 
 fn main() {
     //io::stdout().flush().unwrap();
-    for x in 1..29 {
-        print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-        println!("{}", generate_grid(x, x));
-        sleep(Duration::from_millis(50));
+    let cursor = TerminalCursor::new();
+    TerminalCursor::hide(&cursor).expect("error");
+
+    for _ in 0..1 {
+        for x in 1..29 {
+            print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+            println!("{}", generate_grid(x, x));
+            sleep(Duration::from_millis(50));
+        }
+        for x in 1..29 {
+            print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
+            println!("{}", generate_grid(30 - x , 30 - x));
+            sleep(Duration::from_millis(50));
+        }
     }
+
+    TerminalCursor::show(&cursor).expect("error");
 }
 
 /// Number of cells must be greater than 0
