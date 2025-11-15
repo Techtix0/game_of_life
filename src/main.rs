@@ -1,84 +1,82 @@
-use std::thread::sleep;
-use std::time::Duration;
 use crossterm_cursor::{self, TerminalCursor};
 
 fn main() {
-    //io::stdout().flush().unwrap();
     let cursor = TerminalCursor::new();
-    TerminalCursor::hide(&cursor).expect("error");
+    TerminalCursor::hide(&cursor).expect("error while trying to hide cursor");
 
-    for _ in 0..1 {
-        for x in 1..29 {
-            print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-            println!("{}", generate_grid(x, x));
-            sleep(Duration::from_millis(50));
-        }
-        for x in 1..29 {
-            print!("{esc}[2J{esc}[1;1H", esc = 27 as char);
-            println!("{}", generate_grid(30 - x , 30 - x));
-            sleep(Duration::from_millis(50));
-        }
-    }
+    let grid = Grid {
+        length: 10,
+        height: 10,
+    };
 
-    TerminalCursor::show(&cursor).expect("error");
+    println!("{}", grid.generate_grid());
+
+    TerminalCursor::show(&cursor).expect("error while trying to show cursor");
 }
 
-/// Number of cells must be greater than 0
-fn generate_grid(x_cells: usize, y_cells: usize) -> String {
-    const TOP_LEFT: char = '┌';
-    const TOP_RIGHT: char = '┐';
-    const BOTTOM_LEFT: char = '└';
-    const BOTTOM_RIGHT: char = '┘';
-    const HORIZONTAL_LINE: &'static str = "───";
-    const VERTICAL_LINE: char = '│';
-    const TOP_SPLIT: char = '┬';
-    const MIDDLE_SPLIT: char = '┼';
-    const BOTTOM_SPLIT: char = '┴';
-    const LEFT_SPLIT: char = '├';
-    const RIGHT_SPLIT: char = '┤';
-    const CELL_INSIDE: &'static str = "   ";
+struct Grid {
+    length: u32,
+    height: u32,
+}
 
-    let mut result: String = String::from("");
-
-    // Generate top row of grid
-    result.push(TOP_LEFT);
-    for _ in 0..x_cells - 1 {
-        result.push_str(HORIZONTAL_LINE);
-        result.push(TOP_SPLIT);
-    }
-    result.push_str(HORIZONTAL_LINE);
-    result.push(TOP_RIGHT);
-
-    // Generate middle rows of grid
-    for i in 0..(y_cells * 2) - 1 {
-        if i % 2 == 0 {
-            result.push_str("\n");
-            for _ in 0..x_cells {
-                result.push(VERTICAL_LINE);
-                result.push_str(CELL_INSIDE);
-            }
-            result.push(VERTICAL_LINE);
-        } else {
-            result.push_str("\n");
-            result.push(LEFT_SPLIT);
-            for _ in 0..x_cells - 1 {
-                result.push_str(HORIZONTAL_LINE);
-                result.push(MIDDLE_SPLIT);
-            }
+impl Grid {
+    fn generate_grid(&self) -> String {
+        const TOP_LEFT: char = '┌';
+        const TOP_RIGHT: char = '┐';
+        const BOTTOM_LEFT: char = '└';
+        const BOTTOM_RIGHT: char = '┘';
+        const HORIZONTAL_LINE: &'static str = "───";
+        const VERTICAL_LINE: char = '│';
+        const TOP_SPLIT: char = '┬';
+        const MIDDLE_SPLIT: char = '┼';
+        const BOTTOM_SPLIT: char = '┴';
+        const LEFT_SPLIT: char = '├';
+        const RIGHT_SPLIT: char = '┤';
+        const CELL_INSIDE: &'static str = "   ";
+    
+        let mut result: String = String::from("");
+    
+        // Generate top row of grid
+        result.push(TOP_LEFT);
+        for _ in 0..self.length - 1 {
             result.push_str(HORIZONTAL_LINE);
-            result.push(RIGHT_SPLIT);
+            result.push(TOP_SPLIT);
         }
-    }
-
-    // Generate bottom row of grid
-    result.push_str("\n");
-    result.push(BOTTOM_LEFT);
-    for _ in 0..x_cells - 1 {
         result.push_str(HORIZONTAL_LINE);
-        result.push(BOTTOM_SPLIT);
+        result.push(TOP_RIGHT);
+    
+        // Generate middle rows of grid
+        for i in 0..(self.height * 2) - 1 {
+            if i % 2 == 0 {
+                result.push_str("\n");
+                for _ in 0..self.length {
+                    result.push(VERTICAL_LINE);
+                    result.push_str(CELL_INSIDE);
+                }
+                result.push(VERTICAL_LINE);
+            } else {
+                result.push_str("\n");
+                result.push(LEFT_SPLIT);
+                for _ in 0..self.length - 1 {
+                    result.push_str(HORIZONTAL_LINE);
+                    result.push(MIDDLE_SPLIT);
+                }
+                result.push_str(HORIZONTAL_LINE);
+                result.push(RIGHT_SPLIT);
+            }
+        }
+    
+        // Generate bottom row of grid
+        result.push_str("\n");
+        result.push(BOTTOM_LEFT);
+        for _ in 0..self.length - 1 {
+            result.push_str(HORIZONTAL_LINE);
+            result.push(BOTTOM_SPLIT);
+        }
+        result.push_str(HORIZONTAL_LINE);
+        result.push(BOTTOM_RIGHT);
+    
+        result
     }
-    result.push_str(HORIZONTAL_LINE);
-    result.push(BOTTOM_RIGHT);
-
-    result
 }
+
