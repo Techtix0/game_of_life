@@ -1,20 +1,56 @@
 use crossterm_cursor::{self, TerminalCursor};
 use game_of_life::clear_console;
-use std::io;
-use std::time::SystemTime;
+use std::io::{self, Write};
 
 fn main() {
     let mut grid: Grid = get_initial_grid();
-
-    // Hide cursor and clear screen
-    let cursor = TerminalCursor::new();
-    TerminalCursor::hide(&cursor).expect("error while trying to hide cursor");
     clear_console();
 
     // Print grid
+    println!("Enter {} as x position to exit", grid.length.to_string());
     println!("{}", grid.generate_grid());
 
-    TerminalCursor::show(&cursor).expect("error while trying to show cursor");
+    let mut running: bool = true;
+    while running {
+        // Add cell
+        let mut x_pos_string = String::new();
+        print!("Cell x position (max {}): ", grid.length - 1);
+        io::stdout().flush().unwrap();
+
+        io::stdin()
+            .read_line(&mut x_pos_string)
+            .expect("Failed to read line");
+        let x_pos: u32 = x_pos_string
+            .trim()
+            .parse::<u32>()
+            .expect("Grid length is not a valid number");
+
+        // if x position is same as total grid length, stop loop
+        if x_pos == grid.length {
+            running = false;
+        }
+
+        let mut y_pos_string = String::new();
+        print!("\x1B[1A");
+        print!("                             \r");
+        print!("Cell y position (max {}): ", grid.height - 1);
+        io::stdout().flush().unwrap();
+
+        io::stdin()
+            .read_line(&mut y_pos_string)
+            .expect("Failed to read line");
+        let y_pos: u32 = y_pos_string
+            .trim()
+            .parse::<u32>()
+            .expect("Grid length is not a valid number");
+
+        grid.alive_cells.push((x_pos, y_pos));
+
+        clear_console();
+        println!("Enter {} as x position to exit", grid.length.to_string());
+        println!("{}", grid.generate_grid());
+    }
+    println!("exited");
 }
 
 fn get_initial_grid() -> Grid {
@@ -23,15 +59,20 @@ fn get_initial_grid() -> Grid {
     io::stdin()
         .read_line(&mut length_string)
         .expect("Failed to read line");
-    let grid_length: u32 = length_string.trim().parse::<u32>().expect("Grid length is not a valid number");
-
+    let grid_length: u32 = length_string
+        .trim()
+        .parse::<u32>()
+        .expect("Grid length is not a valid number");
 
     let mut height_string = String::new();
     println!("How many cells high should the grid be?");
     io::stdin()
         .read_line(&mut height_string)
         .expect("Failed to read line");
-    let grid_height: u32 = height_string.trim().parse::<u32>().expect("Grid height is not a valid number");
+    let grid_height: u32 = height_string
+        .trim()
+        .parse::<u32>()
+        .expect("Grid height is not a valid number");
 
     let grid = Grid {
         length: grid_length,
