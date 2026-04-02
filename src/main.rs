@@ -1,33 +1,44 @@
 use crossterm_cursor::{self, TerminalCursor};
 use game_of_life::clear_console;
+use std::io;
 use std::time::SystemTime;
 
 fn main() {
-    // Hide cursor
+    let mut grid: Grid = get_initial_grid();
+
+    // Hide cursor and clear screen
     let cursor = TerminalCursor::new();
     TerminalCursor::hide(&cursor).expect("error while trying to hide cursor");
-
-    let grid = Grid {
-        length: 10,
-        height: 10,
-        alive_cells: vec![(0, 0), (1, 0), (5, 5), (9, 9), (0, 9), (9, 0)],
-    };
-
-    // Save start time
-    let start = SystemTime::now();
-
-    // Main logic
-
     clear_console();
+
+    // Print grid
     println!("{}", grid.generate_grid());
 
-    // Save end time
-    let end = SystemTime::now();
-    // Calculate duration
-    let duration = end.duration_since(start).expect("error");
-    println!("{duration:?}");
-
     TerminalCursor::show(&cursor).expect("error while trying to show cursor");
+}
+
+fn get_initial_grid() -> Grid {
+    let mut length_string = String::new();
+    println!("How many cells long should the grid be? ");
+    io::stdin()
+        .read_line(&mut length_string)
+        .expect("Failed to read line");
+    let grid_length: u32 = length_string.trim().parse::<u32>().expect("Grid length is not a valid number");
+
+
+    let mut height_string = String::new();
+    println!("How many cells high should the grid be?");
+    io::stdin()
+        .read_line(&mut height_string)
+        .expect("Failed to read line");
+    let grid_height: u32 = height_string.trim().parse::<u32>().expect("Grid height is not a valid number");
+
+    let grid = Grid {
+        length: grid_length,
+        height: grid_height,
+        alive_cells: vec![],
+    };
+    grid
 }
 
 #[derive(Default)]
@@ -70,7 +81,7 @@ impl Grid {
             if i % 2 == 0 {
                 for j in 0..self.length {
                     result.push(VERTICAL_LINE);
-                    match self.alive_cells.contains(&(j, i/2)) {
+                    match self.alive_cells.contains(&(j, i / 2)) {
                         true => {
                             result.push_str(ALIVE_CELL);
                         }
