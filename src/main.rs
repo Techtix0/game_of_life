@@ -1,6 +1,6 @@
 use crossterm_cursor::{self, TerminalCursor};
-use std::time::{SystemTime};
 use game_of_life::clear_console;
+use std::time::SystemTime;
 
 fn main() {
     // Hide cursor
@@ -8,9 +8,9 @@ fn main() {
     TerminalCursor::hide(&cursor).expect("error while trying to hide cursor");
 
     let grid = Grid {
-        length: 3,
-        height: 3,
-        alive_cells: vec![(0, 0), (0, 2), (1, 1)],
+        length: 10,
+        height: 10,
+        alive_cells: vec![(0, 0), (1, 0), (5, 5), (9, 9), (0, 9), (9, 0)],
     };
 
     // Save start time
@@ -70,7 +70,7 @@ impl Grid {
             if i % 2 == 0 {
                 for j in 0..self.length {
                     result.push(VERTICAL_LINE);
-                    match self.alive_cells.contains(&(j, i)) {
+                    match self.alive_cells.contains(&(j, i/2)) {
                         true => {
                             result.push_str(ALIVE_CELL);
                         }
