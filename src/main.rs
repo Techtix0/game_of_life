@@ -3,6 +3,7 @@ use std::time::{SystemTime};
 use game_of_life::clear_console;
 
 fn main() {
+    // Hide cursor
     let cursor = TerminalCursor::new();
     TerminalCursor::hide(&cursor).expect("error while trying to hide cursor");
 
@@ -12,14 +13,18 @@ fn main() {
         alive_cells: vec![(0, 0), (0, 2), (1, 1)],
     };
 
+    // Save start time
     let start = SystemTime::now();
+
+    // Main logic
 
     clear_console();
     println!("{}", grid.generate_grid());
 
+    // Save end time
     let end = SystemTime::now();
+    // Calculate duration
     let duration = end.duration_since(start).expect("error");
-
     println!("{duration:?}");
 
     TerminalCursor::show(&cursor).expect("error while trying to show cursor");
