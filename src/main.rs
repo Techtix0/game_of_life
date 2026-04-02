@@ -1,5 +1,6 @@
 use crossterm_cursor::{self, TerminalCursor};
-use std::time::{Duration, SystemTime};
+use std::time::{SystemTime};
+use game_of_life::clear_console;
 
 fn main() {
     let cursor = TerminalCursor::new();
@@ -13,6 +14,7 @@ fn main() {
 
     let start = SystemTime::now();
 
+    clear_console();
     println!("{}", grid.generate_grid());
 
     let end = SystemTime::now();
